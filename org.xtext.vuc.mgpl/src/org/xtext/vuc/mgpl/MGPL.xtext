@@ -1,0 +1,94 @@
+grammar org.xtext.vuc.mgpl.MGPL with org.eclipse.xtext.common.Terminals
+
+generate mGPL "http://www.xtext.org/vuc/mgpl/MGPL"
+
+Prog:
+	'game' name=ID '(' attrAssList=AttrAssList? ')' decls+=Decl* stmtBlock=StmtBlock blocks+=Block*;
+
+Decl:
+	VarDecl ';' | ObjDecl ';';
+
+VarDecl:
+	SimpleVarDecl | ArrayVarDecl;
+
+SimpleVarDecl:
+	'int' name=ID (init=Init)?;
+	
+ArrayVarDecl:
+	'int' name=ID '[' len=INT ']';
+	
+Init returns Expr:
+	'=' Expr;
+
+ObjDecl:
+	SimpleObjDecl | ArrayObjDecl;
+	
+SimpleObjDecl:
+	objType=ObjType name=ID '(' (attrAssList=AttrAssList)? ')';
+
+ArrayObjDecl:
+	objType=ObjType name=ID '[' len=INT ']';
+	
+ObjType:
+	'rectangle' | 'triangle' | 'circle';
+
+AttrAssList:
+	attrList+=AttrAss (',' attrList+=AttrAss)*;
+	
+AttrAss:
+	{AttrAss} name=ID '=' expr=Expr;
+	
+Block:
+	AnimBlock | EventBlock;
+	
+AnimBlock:
+	'animation' name=ID '(' objType=ObjType objName=ID ')' stmtBlock=StmtBlock;
+	
+EventBlock:
+	'on' key=KeyStroke stmtBlock=StmtBlock;
+	
+KeyStroke:
+	'space' | 'leftarrow' | 'rightarrow' | 'uparrow' | 'downarrow';
+	
+StmtBlock:
+	{StmtBlock} '{' stmts+=Stmt* '}';
+	
+Stmt:
+	IfStmt | ForStmt | AssStmt ';';
+	
+IfStmt:
+	'if' '(' expr=Expr ')' thenBlock=StmtBlock (else?='else' elseBlock=StmtBlock)?;
+	
+ForStmt:
+	'for' '(' init=AssStmt ';' condition=Expr ';' counter=AssStmt ')' loopBody=StmtBlock;
+
+AssStmt:
+	var=Var '=' expr=Expr;
+	
+Var:
+	name=ID (array?='[' arrayAccess=Expr ']')? (access?='.' accName=ID)?;
+
+Expr returns Expr:
+	ExprDisj;
+
+ExprDisj returns Expr:
+	ExprConj ({Operation.left=current} op='||' right=ExprConj)*;
+	
+ExprConj returns Expr:
+	ExprRel ({Operation.left=current} op='&&' right=ExprRel)*;
+
+ExprRel returns Expr:
+	ExprAdd ({Operation.left=current} op=('==' | '<=' | '<') right=ExprAdd)*;
+
+ExprAdd returns Expr:
+	ExprMul ({Operation.left=current} op=('+' | '-') right=ExprMul)*;
+	
+ExprMul returns Expr:
+	ExprUnary ({Operation.left=current} op=('*' | '/') right=ExprUnary)*;
+
+ExprUnary returns Expr:
+	{UnaryOperation} op=('-' | '!') expr=ExprUnary | '(' {BracketExpr} expr=Expr ')' | ExprAtomic;
+	
+ExprAtomic:
+	{Numeric} numeric=INT | Var ({Touches.left=current} 'touches' right=Var)?;
+

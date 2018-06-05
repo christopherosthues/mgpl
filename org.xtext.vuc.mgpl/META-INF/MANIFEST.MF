@@ -1,0 +1,29 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: org.xtext.vuc.mgpl
+Bundle-Vendor: My Company
+Bundle-Version: 1.0.0.qualifier
+Bundle-SymbolicName: org.xtext.vuc.mgpl; singleton:=true
+Bundle-ActivationPolicy: lazy
+Require-Bundle: org.eclipse.xtext,
+ org.eclipse.xtext.xbase,
+ org.eclipse.equinox.common;bundle-version="3.5.0",
+ org.eclipse.emf.ecore,
+ org.eclipse.xtext.xbase.lib,
+ org.antlr.runtime,
+ org.eclipse.xtext.util,
+ org.eclipse.xtend.lib,
+ org.eclipse.emf.common
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Export-Package: org.xtext.vuc.mgpl.mGPL.impl,
+ org.xtext.vuc.mgpl.serializer,
+ org.xtext.vuc.mgpl,
+ org.xtext.vuc.mgpl.mGPL,
+ org.xtext.vuc.mgpl.scoping,
+ org.xtext.vuc.mgpl.parser.antlr.internal,
+ org.xtext.vuc.mgpl.services,
+ org.xtext.vuc.mgpl.parser.antlr,
+ org.xtext.vuc.mgpl.generator,
+ org.xtext.vuc.mgpl.mGPL.util,
+ org.xtext.vuc.mgpl.validation
+Import-Package: org.apache.log4j
