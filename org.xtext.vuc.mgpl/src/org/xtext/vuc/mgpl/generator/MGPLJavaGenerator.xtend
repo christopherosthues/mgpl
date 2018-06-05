@@ -49,7 +49,7 @@ import org.xtext.vuc.mgpl.mGPL.Var
 import org.xtext.vuc.mgpl.mGPL.VarDecl
 
 /**
- * Generates code from your model files on save.
+ * Generates Java code from the model files.
  * 
  * See https://www.eclipse.org/Xtext/documentation/303_runtime_concepts.html#code-generation
  */

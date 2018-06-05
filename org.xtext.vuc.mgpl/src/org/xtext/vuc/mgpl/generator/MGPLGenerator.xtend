@@ -15,7 +15,6 @@
  */
 package org.xtext.vuc.mgpl.generator
 
-import com.google.inject.Inject
 import org.eclipse.emf.ecore.resource.Resource
 import org.eclipse.xtext.generator.AbstractGenerator
 import org.eclipse.xtext.generator.IFileSystemAccess2
@@ -29,11 +28,7 @@ import org.eclipse.xtext.generator.IGeneratorContext
 class MGPLGenerator extends AbstractGenerator {
 	
 	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
+		// initialize new Java code generator
 		new MGPLJavaGenerator().doGenerate(resource, fsa, context);
-//		fsa.generateFile('greetings.txt', 'People to greet: ' + 
-//			resource.allContents
-//				.filter(Greeting)
-//				.map[name]
-//				.join(', '))
 	}
 }

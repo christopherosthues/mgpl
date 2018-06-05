@@ -63,6 +63,7 @@ class MGPLValidator extends AbstractMGPLValidator {
 	
 
 	/**
+	 * TASK 1: Declarations
 	 * No identically named declarations are allowed. So, for example, the name of 
 	 * an integer variable can not be used as the name of another declared object. 
 	 * The declaration order, if not determined by the grammar, is not relevant 
@@ -121,7 +122,12 @@ class MGPLValidator extends AbstractMGPLValidator {
 	
 
 	/**
-	 * 
+	 * TASK 2: Bindings
+	 * All applied occurrences of variable or object names must be declared. In particular, 
+	 * array accesses require the presence of a corresponding array declaration and attribute 
+	 * accesses the presence of an object with a corresponding attribute (further on the 
+	 * attributes below). An animation_block attribute must always point to an existing 
+	 * animation handler of appropriate type.
 	 */
 	@Check
 	def checkBindings(Prog prog) {
@@ -169,6 +175,10 @@ class MGPLValidator extends AbstractMGPLValidator {
 		}
 	}
 	
+	/**
+	 * Checks if a variable is correctly used (array, simple), has an appropriate 
+	 * attribute or if it is declared.
+	 */
 	def private checkVariableBinding(Var v, Map<String, String> anims, Set<String> simpleVarNames, Set<String> arrayVarNames, 
 								Map<String, String> simpleObjs, Map<String, String> arrayObjs) {
 		var boolean isArrVar = arrayVarNames.contains(v.name);
@@ -201,6 +211,9 @@ class MGPLValidator extends AbstractMGPLValidator {
 		}
 	}
 
+	/**
+	 * Checks the given object type for the presence of the given attribute.
+	 */
 	def private hasAttribute(String objType, String attributeName) {
 		switch objType {
 			case "circle":
@@ -216,6 +229,9 @@ class MGPLValidator extends AbstractMGPLValidator {
 		return false;
 	}
 	
+	/**
+	 * Checks the type of all attribute assignments.
+	 */
 	def private checkAttrAss(ObjDecl d, AttrAss aas, Map<String, String> anims, Map<String, String> simpleObjs, 
 							 Map<String, String> arrayObjs, Set<String> simpleVarNames, Set<String> arrayVarNames) {
 		if (aas.name != "animation_block") {
@@ -227,6 +243,9 @@ class MGPLValidator extends AbstractMGPLValidator {
 		checkAnimationBlock(d.name, aas.name, aas.expr, anims, simpleObjs, arrayObjs, simpleVarNames, arrayVarNames, aas, MGPLPackage.Literals.ATTR_ASS__EXPR);
 	}
 	
+	/**
+	 * Checks if all assignment statements are type correct.
+	 */
 	def private checkAssStmt(AssStmt ass, Map<String, String> anims, Map<String, String> simpleObjs, 
 							 Map<String, String> arrayObjs, Set<String> simpleVarNames, Set<String> arrayVarNames) {
 		var varName = ass.^var.name;
@@ -242,6 +261,9 @@ class MGPLValidator extends AbstractMGPLValidator {
 		}
 	}
 	
+	/**
+	 * Checks the assignment of an animation block.
+	 */
 	def private checkAnimationBlock(String varName, String attrName, Expr expr, Map<String, String> anims, Map<String, String> simpleObjs, 
 							 Map<String, String> arrayObjs, Set<String> simpleVarNames, Set<String> arrayVarNames, 
 							 EObject obj, EReference ref) {
@@ -265,6 +287,9 @@ class MGPLValidator extends AbstractMGPLValidator {
 		}
 	}
 	
+	/**
+	 * Retrieves the type of a variable.
+	 */
 	def private resolveType(Var v, Map<String, String> anims, Map<String, String> simpleObjs, 
 							Map<String, String> arrayObjs, Set<String> simpleVarNames, 
 							Set<String> arrayVarNames) {
@@ -298,6 +323,9 @@ class MGPLValidator extends AbstractMGPLValidator {
 		return null;
 	}
 	
+	/**
+	 * Retrieves the type of an expression.
+	 */
 	def private resolveType(Expr e, Map<String, String> anims, Map<String, String> simpleObjs, 
 							Map<String, String> arrayObjs, Set<String> simpleVarNames, 
 							Set<String> arrayVarNames) {
@@ -308,6 +336,9 @@ class MGPLValidator extends AbstractMGPLValidator {
 		}
 	}
 	
+	/**
+	 * Retrieves the type of an object for an animation block.
+	 */
 	def private getAnimationType(String animationName, Map<String, String> simpleObjs, Map<String, String> arrayObjs) {
 		var String animationType = arrayObjs.get(animationName);
 		if (animationType === null) {
@@ -318,6 +349,7 @@ class MGPLValidator extends AbstractMGPLValidator {
 	
 	
 	/**
+	 * TASK 3: Expressions
 	 * Both operands of the touches expression must be graphic objects. In all other 
 	 * expressions (numeric, relational, and Boolean), the operands must be of type 
 	 * int. For example, the expression 1 + bullets [i] is not allowed if bullets is 
@@ -337,6 +369,9 @@ class MGPLValidator extends AbstractMGPLValidator {
 		checkArithmeticExpressions(prog, anims, simpleObjs, arrayObjs, simpleVarNames, arrayVarNames);
 	}
 
+	/**
+	 * Checks of all touches expressions are type correct (of type object).
+	 */
 	def private checkTouchesExpressions(Prog prog, Map<String, String> anims, Map<String, String> simpleObjs, 
 							Map<String, String> arrayObjs, Set<String> simpleVarNames, Set<String> arrayVarNames) {
 		for (Decl d : prog.decls) {
@@ -362,6 +397,9 @@ class MGPLValidator extends AbstractMGPLValidator {
 		}
 	}
 
+	/**
+	 * Checks if both operands of a touches expression are of type object.
+	 */
 	def private checkTouchesExpression(Touches touches, Map<String, String> anims, Map<String, String> simpleObjs, 
 							Map<String, String> arrayObjs, Set<String> simpleVarNames, Set<String> arrayVarNames) {
 		var String type = resolveType(touches.left, anims, simpleObjs, arrayObjs, simpleVarNames, arrayVarNames);
@@ -375,6 +413,7 @@ class MGPLValidator extends AbstractMGPLValidator {
 	}
 
 	/**
+	 * Checks of all arithmetic expressions are type correct (of type int).
 	 * Only need to check Operations and UnaryOperations.
 	 */
 	def private checkArithmeticExpressions(Prog prog, Map<String, String> anims, Map<String, String> simpleObjs, 
@@ -389,6 +428,9 @@ class MGPLValidator extends AbstractMGPLValidator {
 		}
 	}
 	
+	/**
+	 * Checks if both operands of an arithmetic expression are of type int.
+	 */
 	def private checkArithmeticType(Expr expr, Map<String, String> anims, Map<String, String> simpleObjs, 
 							Map<String, String> arrayObjs, Set<String> simpleVarNames, Set<String> arrayVarNames,
 							EObject obj, EReference ref) {
@@ -400,7 +442,25 @@ class MGPLValidator extends AbstractMGPLValidator {
 
 
 	/**
+	 * TASK 4: Attributes
+	 * Only certain attributes are allowed for the different objects. These are as follows:
+	 * - game: height, width,speed,x,y
+	 * - circle: animation_block,radius,visible,x,y
+	 * - rectangle, triangle: animation_block,height,visible,width,x,y
+	 *
+	 * Instead of the attribute names height, radius, width, the short forms h, r, w 
+	 * are also permissible. Within an attribute declaration part, each allowed attribute 
+	 * must occur at most once. Program attributes, ie attributes of game, may only be 
+	 * initialized with constants in the attribute declaration section.
 	 * 
+	 * Illegal attribute values ​​(e.g., h = -10) are handled at run time. Only for the 
+	 * program attribute speed should a value between 0 and 100 be ensured (0 slowest 
+	 * gameplay, 100 fastest gameplay, default 50).
+	 */
+	
+	/**
+	 * Checks if all game attributes are assigned with constants. Checks if the value of 
+	 * the attribute speed is between 0 and 100.
 	 */
 	@Check
 	def checkProgramAttributes(Prog prog) {
@@ -419,6 +479,9 @@ class MGPLValidator extends AbstractMGPLValidator {
 		}
 	}
 
+	/**
+	 * Checks all attribute assignments of an object declaration.
+	 */
 	@Check
 	def checkObjectAttributes(SimpleObjDecl sod) {
 		switch sod.objType {
@@ -430,7 +493,11 @@ class MGPLValidator extends AbstractMGPLValidator {
 					RECTANGLE_TRIANGLE_ATTRIBUTES_SHORT)
 		}
 	}
-
+	
+	/**
+	 * Checks if no object attribute is assigned more than once in constructor and if the 
+	 * object has an appropriate attribute.
+	 */
 	def private checkObjAttrList(String obj, AttrAssList aas, String[] names, String[] shortNames) {
 		var HashSet<String> attrs = new HashSet<String>();
 		for (AttrAss aa : aas.attrList) {
@@ -446,6 +513,10 @@ class MGPLValidator extends AbstractMGPLValidator {
 		}
 	}
 
+	/**
+	 * If the given attribute name is a abbreviation the long name will be returned, 
+	 * otherwise the string itself.
+	 */
 	def private longName(String s) {
 		switch s {
 			case "w": return "width"
@@ -455,6 +526,10 @@ class MGPLValidator extends AbstractMGPLValidator {
 		return s
 	}
 
+	/**
+	 * If the given attribute name has an optional abbreviation the abbreviation will be returned, 
+	 * otherwise the string itself.
+	 */
 	def private shortName(String s) {
 		switch s {
 			case "width": return "w"
@@ -464,10 +539,16 @@ class MGPLValidator extends AbstractMGPLValidator {
 		return s
 	}
 
+	/**
+	 * Returns a set of the names of all simple variables of type int.
+	 */
 	def private getSimpleVariables(Prog prog) {
 		return prog.eAllContents.toSet.filter(SimpleVarDecl).map[v|v.name].toSet;
 	}
 
+	/**
+	 * Returns a set of the names of all variables of type int[].
+	 */
 	def private getArrayVariables(Prog prog) {
 		return prog.eAllContents.toSet.filter(ArrayVarDecl).map[v|v.name].toSet;
 	}
