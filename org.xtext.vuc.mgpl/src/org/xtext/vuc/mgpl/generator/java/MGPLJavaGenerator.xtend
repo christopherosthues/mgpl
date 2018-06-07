@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.xtext.vuc.mgpl.generator
+package org.xtext.vuc.mgpl.generator.java
+
+import static org.xtext.vuc.mgpl.generator.MGPLGenerator.*;
 
 import org.eclipse.emf.ecore.resource.Resource
 import org.eclipse.xtext.generator.AbstractGenerator
@@ -55,28 +57,24 @@ import org.xtext.vuc.mgpl.mGPL.VarDecl
  */
 class MGPLJavaGenerator extends AbstractGenerator {
 	
-	public static val String[] GAME_ATTRIBUTES = #["speed"];
-	public static val String[] RECTANGLE_ATTRIBUTES = #["x", "y", "width", "height", "visible", "animation_block"];
-	public static val String[] CIRCLE_ATTRIBUTES = #["x", "y", "radius", "visible", "animation_block"];
-	public static val String[] TRIANGLE_ATTRIBUTES = #["x", "y", "width", "height", "visible", "animation_block"];
 	// TODO: attrAssLists: check attrAssList for suitable constructor, if no found generate setter invocations
 	
-	private val String packagePath = "com/xtext/vuc/mgpl/";
+	private static val String JAVA_PACKAGE_PATH = "java/" + PACKAGE_PATH;
 	private val String packageName = "com.xtext.vuc.mgpl";
 	private var String programName;
 	
 	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
-		fsa.generateFile(packagePath + "Game.java", Game.game(packageName))
-		new MGPLObjects().doGenerate(fsa, packagePath, packageName)
-		fsa.generateFile(packagePath + 'Animation.java', Animation.animation(packageName))
-		fsa.generateFile(packagePath + "Util.java", util)
+		fsa.generateFile(JAVA_PACKAGE_PATH + "Game.java", Game.game(packageName))
+		new MGPLObjects().doGenerate(fsa, JAVA_PACKAGE_PATH, packageName)
+		fsa.generateFile(JAVA_PACKAGE_PATH + 'Animation.java', Animation.animation(packageName))
+		fsa.generateFile(JAVA_PACKAGE_PATH + "Util.java", util)
 
 		for (prog : resource.allContents.toIterable.filter(Prog)) {
 			var String gameName = prog.name.toLowerCase;
 			
 			programName = naming(prog.name).toFirstUpper
-			fsa.generateFile(packagePath + gameName + "/" + programName + ".java", prog.compile(gameName))
-			fsa.generateFile(packagePath + gameName + "/ui/" + programName + "UI.java", gameUI(prog, gameName));
+			fsa.generateFile(JAVA_PACKAGE_PATH + gameName + "/" + programName + ".java", prog.compile(gameName))
+			fsa.generateFile(JAVA_PACKAGE_PATH + gameName + "/ui/" + programName + "UI.java", gameUI(prog, gameName));
 		}
 	}
 	
@@ -162,15 +160,6 @@ class MGPLJavaGenerator extends AbstractGenerator {
 			}
 		}
 	'''
-	
-	def shortNames(String s) {
-		switch s {
-			case "width": return "w"
-			case "height": return "h"
-			case "radius": return "r"
-		}
-		return null
-	}
 	
 	def naming(String s) {
 		var String name = s;
