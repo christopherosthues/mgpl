@@ -60,21 +60,22 @@ class MGPLJavaGenerator extends AbstractGenerator {
 	// TODO: attrAssLists: check attrAssList for suitable constructor, if no found generate setter invocations
 	
 	private static val String JAVA_PACKAGE_PATH = "java/" + PACKAGE_PATH;
+	public static val String FILE_EXTENSION = ".java";
 	private val String packageName = "com.xtext.vuc.mgpl";
 	private var String programName;
 	
 	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
-		fsa.generateFile(JAVA_PACKAGE_PATH + "Game.java", Game.game(packageName))
+		fsa.generateFile(JAVA_PACKAGE_PATH + 'Game' + FILE_EXTENSION, Game.game(packageName))
 		new MGPLObjects().doGenerate(fsa, JAVA_PACKAGE_PATH, packageName)
-		fsa.generateFile(JAVA_PACKAGE_PATH + 'Animation.java', Animation.animation(packageName))
-		fsa.generateFile(JAVA_PACKAGE_PATH + "Util.java", util)
+		fsa.generateFile(JAVA_PACKAGE_PATH + 'Animation' + FILE_EXTENSION, Animation.animation(packageName))
+		fsa.generateFile(JAVA_PACKAGE_PATH + 'Util' + FILE_EXTENSION, util)
 
 		for (prog : resource.allContents.toIterable.filter(Prog)) {
 			var String gameName = prog.name.toLowerCase;
 			
 			programName = naming(prog.name).toFirstUpper
-			fsa.generateFile(JAVA_PACKAGE_PATH + gameName + "/" + programName + ".java", prog.compile(gameName))
-			fsa.generateFile(JAVA_PACKAGE_PATH + gameName + "/ui/" + programName + "UI.java", gameUI(prog, gameName));
+			fsa.generateFile(JAVA_PACKAGE_PATH + gameName + "/" + programName + FILE_EXTENSION, prog.compile(gameName))
+			fsa.generateFile(JAVA_PACKAGE_PATH + gameName + "/ui/" + programName + 'UI' + FILE_EXTENSION, gameUI(prog, gameName));
 		}
 	}
 	

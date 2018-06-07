@@ -17,13 +17,15 @@ package org.xtext.vuc.mgpl.generator.java
 
 import org.eclipse.xtext.generator.IFileSystemAccess2
 
+import static org.xtext.vuc.mgpl.generator.java.MGPLJavaGenerator.FILE_EXTENSION
+
 class MGPLObjects {
 	
 	def doGenerate(IFileSystemAccess2 fsa, String packagePath, String packageName) {
-		fsa.generateFile(packagePath + "object/MGPLObject.java", mgplObject(packageName))
-		fsa.generateFile(packagePath + "object/MGPLCircle.java", mgplCircle(packageName))
-		fsa.generateFile(packagePath + "object/MGPLRectangle.java", mgplRectangle(packageName))
-		fsa.generateFile(packagePath + "object/MGPLTriangle.java", mgplTriangle(packageName))
+		fsa.generateFile(packagePath + 'object/MGPLObject' + FILE_EXTENSION, mgplObject(packageName))
+		fsa.generateFile(packagePath + 'object/MGPLCircle' + FILE_EXTENSION, mgplCircle(packageName))
+		fsa.generateFile(packagePath + 'object/MGPLRectangle' + FILE_EXTENSION, mgplRectangle(packageName))
+		fsa.generateFile(packagePath + 'object/MGPLTriangle' + FILE_EXTENSION, mgplTriangle(packageName))
 	}
 	
 	def mgplObject(String packageName) '''
