@@ -20,6 +20,7 @@ import org.eclipse.xtext.generator.AbstractGenerator
 import org.eclipse.xtext.generator.IFileSystemAccess2
 import org.eclipse.xtext.generator.IGeneratorContext
 import org.xtext.vuc.mgpl.generator.java.MGPLJavaGenerator
+import org.xtext.vuc.mgpl.generator.python.MGPLPythonGenerator
 
 /**
  * Generates code from your model files on save.
@@ -38,6 +39,8 @@ class MGPLGenerator extends AbstractGenerator {
 	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
 		// initialize new Java code generator
 		new MGPLJavaGenerator().doGenerate(resource, fsa, context);
+		// initialize new Python code generator
+		new MGPLPythonGenerator().doGenerate(resource, fsa, context);
 	}
 	
 	def static shortNames(String s) {
