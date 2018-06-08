@@ -29,11 +29,7 @@ class MGPLObjects {
     }
     
     def mgplObject(String packageName) '''
-«««        import javafx.scene.shape.Shape;
-        
-«««        import «packageName».Animation;
-        
-        class MGPLObject {
+        class MGPLObject:
             
             def __init__(self, x=0, y=0, visible=True, animation_block=None):
                 self.x = x
@@ -42,69 +38,55 @@ class MGPLObjects {
                 self.visible = visible
                 self.shape = None
             
-            
-            def touches(self, MGPLObject m):
-                \'\'\'Collision detection
-                \'\'\'
+            def touches(self, mgpl_obj):
+                """Collision detection
+                """
 «««                point_in_poly(gon)?
 «««                return Shape.intersect(this.shape, m.getShape()).getBoundsInLocal().getWidth() != -1;
                 return True
             
-            
-            def run_animation():
-                if (self.animation_block != None):
-                    self.animation_block.run(self)
+            def run_animation(self):
+                if self.animation_block is not None:
+                    self.animation_block(self)
         
     '''
     
     def mgplCircle(String packageName) '''
-«««        package «packageName».object;
+        from com.xtext.vuc.mgpl.object.mgpl_object import MGPLObject
         
-«««        import javafx.scene.shape.Circle;
         
-«««        import «packageName».Animation;
-        
-        \'\'\'Class to represent a circle. The x and y values are interpreted as the center of the circle.
-        \'\'\'
         class MGPLCircle(MGPLObject):
+            """Class to represent a circle. The x and y values are interpreted as the center of the circle.
+            """
             
             def __init__(self, x=0, y=0, radius=10, visible=True, animation_block=None):
                 super().__init__(x, y, visible, animation_block)
 «««                self.shape = circle
                 self.radius = radius
-        
     '''
     
     def mgplRectangle(String packageName) '''
-«««        package «packageName».object;
+        from com.xtext.vuc.mgpl.object.mgpl_object import MGPLObject
         
-«««        import javafx.scene.shape.Rectangle;
         
-«««        import «packageName».Animation;
-        
-        \'\'\'Class to represent a rectangle. The x and y values are interpreted as the 
-          center of the rectangle.
-        \'\'\'
         class MGPLRectangle(MGPLObject):
+            """Class to represent a rectangle. The x and y values are interpreted as the 
+               center of the rectangle.
+            """
             
             def __init__(self, x=0, y=0, width=100, height=100, visible=True, animation_block=None):
                 super().__init__(x, y, visible, animation_block)
                 self.width = width
                 self.height = height
-        
     '''
     
     def mgplTriangle(String packageName) '''
-«««        package «packageName».object;
+        from com.xtext.vuc.mgpl.object.mgpl_object import MGPLObject
         
-«««        import javafx.collections.ObservableList;
-«««        import javafx.scene.shape.Polygon;
         
-«««        import «packageName».Animation;
-        
-        \'\'\'Class to represent a triangle. The x and y values are interpreted as the upper left corner of the triangle.
-        \'\'\'
-        class MGPLTriangle(MGPLRectangle):
+        class MGPLTriangle(MGPLObject):
+            """Class to represent a triangle. The x and y values are interpreted as the upper left corner of the triangle.
+            """
             
             def __init__(self, x=0, y=0, width=100, height=100, visible=True, animation_block=None):
                 super().__init__(x, y, visible, animation_block)

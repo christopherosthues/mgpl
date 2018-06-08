@@ -23,7 +23,6 @@ import org.xtext.vuc.mgpl.mGPL.AnimBlock
 import org.xtext.vuc.mgpl.mGPL.ArrayObjDecl
 import org.xtext.vuc.mgpl.mGPL.ArrayVarDecl
 import org.xtext.vuc.mgpl.mGPL.AssStmt
-import org.xtext.vuc.mgpl.mGPL.AttrAss
 import org.xtext.vuc.mgpl.mGPL.AttrAssList
 import org.xtext.vuc.mgpl.mGPL.BracketExpr
 import org.xtext.vuc.mgpl.mGPL.Decl
@@ -171,9 +170,10 @@ class MGPLPythonGenerator extends AbstractGenerator {
     }
     
     def compile(Prog prog, String pn) '''
-«««        import «packageName».Animation;
-«««        import «packageName».Util;
-«««        import «packageName».object.*;
+        from com.xtext.vuc.mgpl.object.mgpl_rectangle import MGPLRectangle
+        from com.xtext.vuc.mgpl.object.mgpl_triangle import MGPLTriangle
+        from com.xtext.vuc.mgpl.object.mgpl_circle import MGPLCircle
+        
         
         class «programName»:
             
@@ -183,51 +183,46 @@ class MGPLPythonGenerator extends AbstractGenerator {
                 self.height = height
                 self.width = width
                 self.speed = speed
-                
                 «FOR decl : prog.decls»
                 «decl.compile»
                 «ENDFOR»
-                
-«««                «FOR mgplObj : prog.decls.filter(SimpleObjDecl)»
-«««                shapes.append(«naming(mgplObj.name)».getShape())
-«««                «ENDFOR»
                 «FOR mgplObj : prog.decls.filter(ArrayObjDecl)»
                 «var String mgplName = naming(mgplObj.name)»
-                for i in range(len(«mgplName»)):
-                    «mgplName»[i] = «getObjType(mgplObj.objType)»()
-«««                    shapes.append(«mgplName»[i].getShape())
-                }
+                for «mgplName»_i in range(len(self.«mgplName»)):
+                    self.«mgplName»[i] = «getObjType(mgplObj.objType)»()
                 «ENDFOR»
-                
                 «prog.stmtBlock.compile»
             
-            
-            def run_animations():
+            def run_animations(self):
                 «FOR mgplObj : prog.decls.filter(SimpleObjDecl)»
-                «naming(mgplObj.name)».run_animation()
+                self.«naming(mgplObj.name)».run_animation()
                 «ENDFOR»
                 «FOR mgplObj : prog.decls.filter(ArrayObjDecl)»
-                for obj in «naming(mgplObj.name)»:
+                for obj in self.«naming(mgplObj.name)»:
                     obj.run_animation()
                 «ENDFOR»
-            
             «FOR eventBlock : prog.blocks.filter(EventBlock)»
             «eventBlock.compile»
             «ENDFOR»
             «FOR animBlock : prog.blocks.filter(AnimBlock)»
             «animBlock.compile»
             «ENDFOR»
-        
-«««            public static final int X = «getConstant(prog.attrAssList, "x")»;
-«««            public static final int Y = «getConstant(prog.attrAssList, "y")»;
-«««            public static final int WIDTH = «getConstant(prog.attrAssList, "width")»;
-«««            public static final int HEIGHT = «getConstant(prog.attrAssList, "height")»;
-«««            
-«««            public «programName»() {
-«««                «var attr = attrAssList(prog.attrAssList, GAME_ATTRIBUTES)»
-«««                super("«prog.name»"«IF attr != ""», «attr»«ENDIF»);
-«««            }
     '''
+//                «FOR mgplObj : prog.decls.filter(SimpleObjDecl)»
+//                shapes.append(«naming(mgplObj.name)».getShape())
+//                «ENDFOR»
+
+//                    shapes.append(«mgplName»[i].getShape())
+
+//            public static final int X = «getConstant(prog.attrAssList, "x")»;
+//            public static final int Y = «getConstant(prog.attrAssList, "y")»;
+//            public static final int WIDTH = «getConstant(prog.attrAssList, "width")»;
+//            public static final int HEIGHT = «getConstant(prog.attrAssList, "height")»;
+//            
+//            public «programName»() {
+//                «var attr = attrAssList(prog.attrAssList, GAME_ATTRIBUTES)»
+//                super("«prog.name»"«IF attr != ""», «attr»«ENDIF»);
+//            }
     
     def compile(Decl decl) {
         switch decl {
@@ -289,15 +284,14 @@ class MGPLPythonGenerator extends AbstractGenerator {
 
     def compile(EventBlock eventBlock) '''
         
-        def «eventBlock.key»Pressed():
+        def «eventBlock.key»_pressed(self):
             «eventBlock.stmtBlock.compile»
     '''
     
     def compile(AnimBlock animBlock) '''
         
-        class «naming(animBlock.name).toFirstUpper»:
-            def run(self, «naming(animBlock.objName)»):
-                «animBlock.stmtBlock.compile»
+        def «naming(animBlock.name)»(self, «naming(animBlock.objName)»):
+            «animBlock.stmtBlock.compile»
     '''
     
     def compile(StmtBlock stmtBlock) '''
@@ -335,7 +329,7 @@ class MGPLPythonGenerator extends AbstractGenerator {
         «asStmt.^var.compile» = «asStmt.expr.compile»'''
     
     def compile(Var v) '''
-        «IF naming(v.name) != programName»«naming(v.name)»«ELSE»«programName»«ENDIF»«IF v.array»[«v.arrayAccess.compile»]«ENDIF»«IF v.access».«v.accName»«ENDIF»'''
+        self«IF naming(v.name) != programName».«naming(v.name)»«ENDIF»«IF v.array»[«v.arrayAccess.compile»]«ENDIF»«IF v.access».«v.accName»«ENDIF»'''
     
     def compile(Expr expr) {
         switch expr {
