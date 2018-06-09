@@ -65,14 +65,47 @@ class MGPLPythonGenerator extends AbstractGenerator {
             var String gameName = prog.name.toLowerCase;
             
             programName = naming(prog.name).toFirstUpper
-            fsa.generateFile(PYTHON_PACKAGE_PATH + gameName + "/" + programName + FILE_EXTENSION, prog.compile(gameName))
-            fsa.generateFile(PYTHON_PACKAGE_PATH + gameName + "/ui/" + programName + 'UI' + FILE_EXTENSION, gameUI(prog, gameName));
+            fsa.generateFile(PYTHON_PACKAGE_PATH + gameName + "/" + programName.toFirstLower + FILE_EXTENSION, prog.compile())
+            fsa.generateFile(PYTHON_PACKAGE_PATH + gameName + "/ui/" + programName.toFirstLower + '_ui' + FILE_EXTENSION, prog.gameUI());
         }
     }
     
-    def gameUI(Prog prog, String pn) '''
+    def gameUI(Prog prog) '''
+        import pygame
+        import sys
+        from «packageName».«naming(prog.name).toFirstLower» import «programName»
+        
+        
         def main():
             game = «programName»(«prog.attrAssList.compile»)
+            pygame.init()
+            clock = pygame.time.Clock()
+            
+            fps = 50 * 1 / game.speed
+            bg = [255, 255, 255]
+            size = [game.width, game.height]
+            
+            screen = pygame.display.set_mode(size)
+            
+            while True:
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        return False
+                
+                key = pygame.key.get_pressed()
+                
+                «FOR event : prog.blocks.filter(EventBlock)»
+                if key[pygame.«getKeyStroke(event.key)»]:
+                    game.«event.key»_pressed()
+                «ENDFOR»
+                
+                screen.fill(bg)
+«««                TODO: draw objects
+                pygame.display.update()
+                clock.tick(fps)
+            
+            pygame.quit()
+            sys.exit
         
         
         if __name__ == 'main':
@@ -161,18 +194,18 @@ class MGPLPythonGenerator extends AbstractGenerator {
     
     def getKeyStroke(String key) {
         switch key {
-            case "space": return "SPACE"
-            case "leftarrow": return "LEFT"
-            case "rightarrow": return "RIGHT"
-            case "uparrow": return "UP"
-            case "downarrow": return "DOWN"
+            case "space": return "K_SPACE"
+            case "leftarrow": return "K_LEFT"
+            case "rightarrow": return "K_RIGHT"
+            case "uparrow": return "K_UP"
+            case "downarrow": return "K_DOWN"
         }
     }
     
-    def compile(Prog prog, String pn) '''
-        from com.xtext.vuc.mgpl.object.mgpl_rectangle import MGPLRectangle
-        from com.xtext.vuc.mgpl.object.mgpl_triangle import MGPLTriangle
-        from com.xtext.vuc.mgpl.object.mgpl_circle import MGPLCircle
+    def compile(Prog prog) '''
+        from «packageName».object.mgpl_rectangle import MGPLRectangle
+        from «packageName».object.mgpl_triangle import MGPLTriangle
+        from «packageName».object.mgpl_circle import MGPLCircle
         
         
         class «programName»:
@@ -274,7 +307,7 @@ class MGPLPythonGenerator extends AbstractGenerator {
     
     def attributeValue(String attributeName, String value) {
     	if (attributeName == "animation_block") {
-    		return naming(value) + "()";  // TODO: naming of animations
+    		return naming(value) + "()";
     	} else if (attributeName == "visible") {
     		return "bool(" + value + ")";
     	} else {
