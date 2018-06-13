@@ -110,70 +110,6 @@ class MGPLPythonGenerator extends AbstractGenerator {
         
         if __name__ == 'main':
             main()
-«««        package «packageName».«pn».ui;
-«««        
-«««        import javafx.animation.AnimationTimer;
-«««        import javafx.application.Application;
-«««        import javafx.event.EventHandler;
-«««        import javafx.scene.Scene;
-«««        import javafx.scene.input.KeyEvent;
-«««        import javafx.scene.layout.Pane;
-«««        import javafx.stage.Stage;
-«««        
-«««        import «packageName».«pn».«programName»;
-«««        
-«««        public class «programName»UI extends Application {
-«««            private «programName» game;
-«««            
-«««            @Override
-«««            public void start(Stage primaryStage) throws Exception {
-«««                game = new «programName»();
-«««                primaryStage.setTitle(game.getName());
-«««                
-«««                Pane root = new Pane();
-«««                root.setPrefWidth(«programName».WIDTH);
-«««                root.setPrefHeight(«programName».HEIGHT);
-«««                root.getChildren().addAll(game.getShapes());
-«««                
-«««                Scene scene = new Scene(root);
-«««                // Register an EventHandler to handle the user input
-«««                scene.addEventHandler(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
-«««                    @Override
-«««                    public void handle(KeyEvent event) {
-«««                        switch (event.getCode()) {
-«««                        «FOR event : prog.blocks.filter(EventBlock)»
-«««                            case «getKeyStroke(event.key)»:
-«««                                game.«event.key»Pressed();
-«««                                break;
-«««                        «ENDFOR»
-«««                        }
-«««                    }
-«««                });
-«««                
-«««                primaryStage.setScene(scene);
-«««                primaryStage.setX(«programName».X);
-«««                primaryStage.setY(«programName».Y);
-«««                
-«««                // Handle the animations
-«««                new AnimationTimer() {
-«««                    private long lastNanoTime = 0;
-«««                    
-«««                    @Override
-«««                    public void handle(long currentNanoTime) {
-«««                        if (((double)currentNanoTime - lastNanoTime) >= 1000000000 / game.getSpeed()) {
-«««                            game.runAnimations();
-«««                            lastNanoTime = currentNanoTime;
-«««                        }
-«««                    }
-«««                }.start();
-«««        
-«««                primaryStage.show();
-«««            }
-«««            
-«««            public static void main(String[] args) {
-«««                launch(args);
-«««            }
-«««        }
     '''
     
     def naming(String s) {
@@ -183,12 +119,6 @@ class MGPLPythonGenerator extends AbstractGenerator {
             case "h": name = "height"
             case "r": name = "radius"
         }
-//        var int i;
-//        while ((i = name.indexOf("_")) !== -1) {
-//            name = name.replaceFirst("_", "");
-//            var String c = name.substring(i, i + 1);
-//            name = name.substring(0, i) + c.toFirstUpper + name.substring(i + 1);
-//        }
         return name;
     }
     
@@ -241,21 +171,6 @@ class MGPLPythonGenerator extends AbstractGenerator {
             «animBlock.compile»
             «ENDFOR»
     '''
-//                «FOR mgplObj : prog.decls.filter(SimpleObjDecl)»
-//                shapes.append(«naming(mgplObj.name)».getShape())
-//                «ENDFOR»
-
-//                    shapes.append(«mgplName»[i].getShape())
-
-//            public static final int X = «getConstant(prog.attrAssList, "x")»;
-//            public static final int Y = «getConstant(prog.attrAssList, "y")»;
-//            public static final int WIDTH = «getConstant(prog.attrAssList, "width")»;
-//            public static final int HEIGHT = «getConstant(prog.attrAssList, "height")»;
-//            
-//            public «programName»() {
-//                «var attr = attrAssList(prog.attrAssList, GAME_ATTRIBUTES)»
-//                super("«prog.name»"«IF attr != ""», «attr»«ENDIF»);
-//            }
     
     def compile(Decl decl) {
         switch decl {
