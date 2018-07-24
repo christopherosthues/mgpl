@@ -57,8 +57,6 @@ import org.xtext.vuc.mgpl.mGPL.VarDecl
  */
 class MGPLJavaGenerator extends AbstractGenerator {
 	
-	// TODO: attrAssLists: check attrAssList for suitable constructor, if no found generate setter invocations
-	
 	private static val String JAVA_PACKAGE_PATH = "java/" + PACKAGE_PATH;
 	public static val String FILE_EXTENSION = ".java";
 	private val String packageName = "com.xtext.vuc.mgpl";
@@ -213,8 +211,7 @@ class MGPLJavaGenerator extends AbstractGenerator {
 			«ENDFOR»
 			
 			public «programName»() {
-				«var attr = attrAssList(prog.attrAssList, GAME_ATTRIBUTES)»
-				super("«prog.name»"«IF attr != ""», «attr»«ENDIF»);
+				super("«prog.name»", «getConstant(prog.attrAssList, "speed")»);
 				«FOR mgplObj : prog.decls.filter(SimpleObjDecl)»
 				shapes.add(«naming(mgplObj.name)».getShape());
 				«ENDFOR»
@@ -338,7 +335,7 @@ class MGPLJavaGenerator extends AbstractGenerator {
 	def getConstant(AttrAssList aas, String attr) {
 		var String attrVal = getAttribute(aas, attr);
 		if (attrVal === null) {
-			return 0;
+			return 50;
 		} else {
 			return attrVal;
 		}
